@@ -4,6 +4,7 @@ class InstitutionType(models.Model):
     description = models.CharField(
         max_length=255, 
         unique=True,
+        default='',
         error_messages={
             'null': 'Description cannot be null',
             'blank': 'Description cannot be blank',
@@ -52,7 +53,7 @@ class Institution(models.Model):
             'unique': 'Email is already in use',
         }, 
     )
-    type = models.ForeignKey(
+    institution_type = models.ForeignKey(
         InstitutionType, 
         on_delete=models.CASCADE, 
         related_name='institutions'
@@ -60,4 +61,4 @@ class Institution(models.Model):
     
 
     def __str__(self):
-        return self.name
+        return f'Name: {self.name} | Type: {self.type} | Phone number: {self.phone_number} | Email: {self.email}'
