@@ -14,11 +14,11 @@ import json
 def get_all_and_post_institution_types(request):
 
     if request.method == 'GET':
-        intitution_types = InstitutionType.objects.all()
+            intitution_types = InstitutionType.objects.all()
 
-        serializer = InstitutionTypeSerializer(intitution_types, many=True)
+            serializer = InstitutionTypeSerializer(intitution_types, many=True)
 
-        return Response(serializer.data)
+            return Response(serializer.data)
     
     if request.method == 'POST':
         new_institution_type = request.data
@@ -68,11 +68,31 @@ def get_put_and_delete_institution_type_by_id(request, id):
 def get_all_and_post_institutions(request):
 
     if request.method == 'GET':
-        intitutions = Institution.objects.all()
 
-        serializer = InstitutionSerializer(intitutions, many=True)
+        try:
+            institution_type = request.GET.get('type', None)
 
-        return Response(serializer.data)
+            if institution_type:
+
+                institutions_by_type = Institution.objects.filter(institution_type=institution_type)
+
+                if institutions_by_type.exists():
+                    serializer_by_type = InstitutionSerializer(institutions_by_type, many=True)
+                    return Response(serializer_by_type.data)
+                
+                else:
+                    return Response({"detail": "No institutions found for the given type."}, status=status.HTTP_404_NOT_FOUND)
+            
+            intitutions = Institution.objects.all()
+
+            serializer = InstitutionSerializer(intitutions, many=True)
+
+            return Response(serializer.data)
+        
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+                
+        
     
     if request.method == 'POST':
         new_institution = request.data
