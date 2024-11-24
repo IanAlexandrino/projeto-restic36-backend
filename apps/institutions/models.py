@@ -61,4 +61,4 @@ class Institution(models.Model):
     
 
     def __str__(self):
-        return f'Name: {self.name} | Type: {self.type} | Phone number: {self.phone_number} | Email: {self.email}'
+        return f'Name: {self.name} | Type: {self.institution_type} | Phone number: {self.phone_number} | Email: {self.email}'
