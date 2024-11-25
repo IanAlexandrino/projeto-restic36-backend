@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'apps.institutions',
-    # 'apps.patients',
+    'apps.patients',
     'apps.practitioners',
 ]
 
