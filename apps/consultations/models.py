@@ -47,3 +47,6 @@ class Consultation(models.Model):
         on_delete=models.CASCADE, 
         related_name='consultations'
     )
+
+    def __str__(self):
+        return f'Date: {self.consultation_date} | Type: {self.consultation_type} | Patient: {self.consultation_patient} | Practitioner: {self.consultation_practitioner} | Institution: {self.consultation_institution}'
