@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import UniqueConstraint
 
 from django.core.exceptions import ValidationError
 
@@ -189,3 +190,65 @@ class AccessHistory(models.Model):
             return f'Access by Patient: {self.patient.name} at {self.access_date_time}'
         elif self.practitioner:
             return f'Access by Practitioner: {self.practitioner.name} at {self.access_date_time}'
+        
+
+class Disease(models.Model):
+    name = models.CharField(
+        max_length=100,
+        unique=True,
+        error_messages={
+            'null': 'Name cannot be null',
+            'blank': 'Name cannot be blank',
+            'unique': 'A disease with this name already exists.',
+        },
+    )
+    description = models.CharField(
+        max_length=255, 
+        error_messages={
+            'null': 'Description cannot be null',
+            'blank': 'Description cannot be blank',
+        },
+    )
+
+    def __str__(self):
+        return self.name
+
+
+class DiseaseHistory(models.Model):
+    observation = models.CharField(
+        max_length=255, 
+        default='',
+        blank=True,
+    )
+    patient = models.OneToOneField(
+        Patient,
+        on_delete=models.CASCADE,
+        related_name='disease_history',
+    )
+
+    def __str__(self):
+        return f'Patient history: {self.patient.name}'
+    
+
+class Diagnosis(models.Model):
+    history = models.ForeignKey(
+        DiseaseHistory,
+        on_delete=models.CASCADE,
+        related_name='diagnostics',
+    )
+    disease = models.ForeignKey(
+        Disease, 
+        on_delete=models.CASCADE, 
+        related_name='diagnostics',
+    )
+    date_time_diagnosis = models.DateTimeField(
+        auto_now_add=True,
+    )
+    
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['history', 'disease'], name='unique_history_disease')
+        ]
+
+    def __str__(self):
+        return f'Disease: {self.disease} | Date of diagnosis: {self.date_time_diagnosis}'

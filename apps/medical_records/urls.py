@@ -11,4 +11,10 @@ urlpatterns = [
     path('exams/<int:id>/', views.get_put_and_delete_exam_by_id, name='get_put_and_delete_exam_by_id'),
     path('access-histories/', views.get_all_and_post_access_histories, name='get_all_and_post_access_histories'),
     path('access-histories/<int:id>/', views.get_put_and_delete_access_history_by_id, name='get_put_and_delete_access_history_by_id'),
+    path('diseases/', views.get_all_and_post_diseases, name='get_all_and_post_diseases'),
+    path('diseases/<int:id>/', views.get_put_and_delete_disease_by_id, name='get_put_and_delete_disease_by_id'),
+    path('diseases-histories/', views.get_all_and_post_diseases_histories, name='get_all_and_post_diseases_histories'),
+    path('diseases-histories/<int:id>/', views.get_put_and_delete_disease_history_by_id, name='get_put_and_delete_disease-history_by_id'),
+    path('diagnostics/', views.get_all_and_post_diagnostics, name='get_all_and_post_diagnostics'),
+    path('diagnostics/<int:id>/', views.get_put_and_delete_diagnosis_by_id, name='get_put_and_delete_diagnosis_by_id'),
 ]

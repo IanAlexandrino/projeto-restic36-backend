@@ -5,8 +5,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-from .models import MedicalRecord, MedicalPrescription, Exam, AccessHistory
-from .serializers import MedicalRecordSerializer, MedicalPrescriptionSerializer, ExamSerializer, AccessHistorySerializer
+from .models import MedicalRecord, MedicalPrescription, Exam, AccessHistory, Disease, DiseaseHistory, Diagnosis
+from .serializers import MedicalRecordSerializer, MedicalPrescriptionSerializer, ExamSerializer, AccessHistorySerializer, DiseaseSerializer, DiseaseHistorySerializer, DiagnosisSerializer
+
 import json
 
 @api_view(['GET', 'POST'])
@@ -296,6 +297,220 @@ def get_put_and_delete_access_history_by_id(request, id):
 
         try:
             access_history.delete()
+            return Response(status=status.HTTP_202_ACCEPTED)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'POST'])
+def get_all_and_post_diseases(request):
+
+    if request.method == 'GET':
+
+        try:
+            diseases = Disease.objects.all()
+
+            serializer = DiseaseSerializer(diseases, many=True)
+
+            return Response(serializer.data)
+        
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+    
+    if request.method == 'POST':
+        new_disease = request.data
+
+        serializer = DiseaseSerializer(data=new_disease)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def get_put_and_delete_disease_by_id(request, id):
+
+    try:
+        disease = Disease.objects.get(pk=id)
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'GET':
+        serializer = DiseaseSerializer(disease)
+        return Response(serializer.data)
+    
+    if request.method == 'PUT':
+        serializer = DiseaseSerializer(disease, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    if request.method == 'DELETE':
+
+        try:
+            disease.delete()
+            return Response(status=status.HTTP_202_ACCEPTED)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'POST'])
+def get_all_and_post_diseases_histories(request):
+
+    if request.method == 'GET':
+
+        try:
+
+            patient = request.GET.get('patient', None)
+
+            if patient:
+
+                disease_history_by_patient = DiseaseHistory.objects.filter(patient=patient)
+
+                if disease_history_by_patient.exists():
+                    serializer = DiseaseHistorySerializer(disease_history_by_patient)
+                    return Response(serializer.data)
+                
+                else:
+                    return Response({"detail": "No disease history found for the given patient."}, status=status.HTTP_404_NOT_FOUND)
+
+            diseases_histories = DiseaseHistory.objects.all()
+
+            serializer = DiseaseHistorySerializer(diseases_histories, many=True)
+
+            return Response(serializer.data)
+        
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+    
+    if request.method == 'POST':
+        new_disease_history = request.data
+
+        serializer = DiseaseHistorySerializer(data=new_disease_history)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def get_put_and_delete_disease_history_by_id(request, id):
+
+    try:
+        disease_history = DiseaseHistory.objects.get(pk=id)
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'GET':
+        serializer = DiseaseHistorySerializer(disease_history)
+        return Response(serializer.data)
+    
+    if request.method == 'PUT':
+        serializer = DiseaseHistorySerializer(disease_history, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    if request.method == 'DELETE':
+
+        try:
+            disease_history.delete()
+            return Response(status=status.HTTP_202_ACCEPTED)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'POST'])
+def get_all_and_post_diagnostics(request):
+
+    if request.method == 'GET':
+
+        try:
+
+            history = request.GET.get('history', None)
+
+            if history:
+
+                diagnostics_by_history = Diagnosis.objects.filter(history=history)
+
+                if diagnostics_by_history.exists():
+                    serializer = DiagnosisSerializer(diagnostics_by_history, many=True)
+                    return Response(serializer.data)
+                
+                else:
+                    return Response({"detail": "No diagnostics found for the given history."}, status=status.HTTP_404_NOT_FOUND)
+
+            diagnostics = Diagnosis.objects.all()
+
+            serializer = DiagnosisSerializer(diagnostics, many=True)
+
+            return Response(serializer.data)
+        
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+    
+    if request.method == 'POST':
+        new_diagnosis = request.data
+
+        serializer = DiagnosisSerializer(data=new_diagnosis)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def get_put_and_delete_diagnosis_by_id(request, id):
+
+    try:
+        diagnosis = Diagnosis.objects.get(pk=id)
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'GET':
+        serializer = DiagnosisSerializer(diagnosis)
+        return Response(serializer.data)
+    
+    if request.method == 'PUT':
+        serializer = DiagnosisSerializer(diagnosis, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    if request.method == 'DELETE':
+
+        try:
+            diagnosis.delete()
             return Response(status=status.HTTP_202_ACCEPTED)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
