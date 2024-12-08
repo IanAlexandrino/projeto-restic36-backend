@@ -77,8 +77,8 @@ def get_all_and_post_institutions(request):
                 institutions_by_type = Institution.objects.filter(institution_type=institution_type)
 
                 if institutions_by_type.exists():
-                    serializer_by_type = InstitutionSerializer(institutions_by_type, many=True)
-                    return Response(serializer_by_type.data)
+                    serializer = InstitutionSerializer(institutions_by_type, many=True)
+                    return Response(serializer.data)
                 
                 else:
                     return Response({"detail": "No institutions found for the given type."}, status=status.HTTP_404_NOT_FOUND)
