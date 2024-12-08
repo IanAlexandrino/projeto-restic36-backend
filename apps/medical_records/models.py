@@ -175,9 +175,9 @@ class AccessHistory(models.Model):
     )
 
     def clean(self):
-        if not self.paciente and not self.profissional:
+        if not self.patient and not self.practitioner:
             raise ValidationError('It must be related to a Patient or Practitioner.')
-        if self.paciente and self.profissional:
+        if self.patient and self.practitioner:
             raise ValidationError('It cannot be related to both Patient and Practitioner at the same time.')
 
     def save(self, *args, **kwargs):
@@ -185,7 +185,7 @@ class AccessHistory(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        if self.paciente:
-            return f'Access by Paciente: {self.paciente.nome} at {self.access_time}'
-        elif self.profissional:
-            return f'Access by Profissional: {self.profissional.nome} at {self.access_time}'
+        if self.patient:
+            return f'Access by Patient: {self.patient.name} at {self.access_date_time}'
+        elif self.practitioner:
+            return f'Access by Practitioner: {self.practitioner.name} at {self.access_date_time}'
