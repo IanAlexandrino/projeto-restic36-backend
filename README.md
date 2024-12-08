@@ -92,13 +92,26 @@ Este é um sistema de gerenciamento médico desenvolvido em Django. Ele foi proj
    python manage.py migrate
    ```
 
-5. Inicie o servidor:
+5. Crie um superusuário (opcional) <br>
+   ```bash
+   python manage.py createsuperuser
+   ```
+
+6. Inicie o servidor:
 
    ```bash
    python manage.py runserver
    ```
 
-6. Acesse o sistema em http://localhost:8000.
+7. Acesse o sistema:
+   ```
+   http://127.0.0.1:8000
+   ```
+
+8. Acesse o painel administrativo (opcional) <br>
+   ```
+   http://127.0.0.1:8000/admin
+   ```
 
 ## 🧪 Testes
 
