@@ -32,10 +32,10 @@ class MedicalRecord(models.Model):
 
     def clean(self):
         if self.patient_medical_record.institution != self.institution_medical_record:
-            raise ValidationError('The patient does not belong to the associated institution.')
+            raise ValidationError('The patient does not belong to the associated medical_record.')
 
         if self.practitioner_medical_record.institution != self.institution_medical_record:
-            raise ValidationError('The doctor does not belong to the associated institution.')
+            raise ValidationError('The doctor does not belong to the associated medical_record.')
 
     def save(self, *args, **kwargs):
         self.full_clean()
@@ -88,9 +88,9 @@ class MedicalPrescription(models.Model):
 
     def clean(self):
         if self.patient.institution != self.institution:
-            raise ValidationError('The patient does not belong to the associated institution.')
+            raise ValidationError('The patient does not belong to the associated medical_prescription.')
         if self.practitioner.institution != self.institution:
-            raise ValidationError('The doctor does not belong to the associated institution.')
+            raise ValidationError('The doctor does not belong to the associated medical_prescription.')
 
     def save(self, *args, **kwargs):
         self.full_clean()
@@ -138,9 +138,9 @@ class Exam(models.Model):
 
     def clean(self):
         if self.patient.institution != self.institution:
-            raise ValidationError('The patient does not belong to the associated institution.')
+            raise ValidationError('The patient does not belong to the associated exam.')
         if self.practitioner.institution != self.institution:
-            raise ValidationError('The doctor does not belong to the associated institution.')
+            raise ValidationError('The doctor does not belong to the associated exam.')
 
     def save(self, *args, **kwargs):
         self.full_clean()
