@@ -9,4 +9,6 @@ urlpatterns = [
     path('prescriptions/<int:id>/', views.get_put_and_delete_medical_prescription_by_id, name='get_put_and_delete_medical_prescription_by_id'),
     path('exams/', views.get_all_and_post_exams, name='get_all_and_post_exams'),
     path('exams/<int:id>/', views.get_put_and_delete_exam_by_id, name='get_put_and_delete_exam_by_id'),
+    path('access-histories/', views.get_all_and_post_access_histories, name='get_all_and_post_access_histories'),
+    path('access-histories/<int:id>/', views.get_put_and_delete_access_history_by_id, name='get_put_and_delete_access_history_by_id'),
 ]

@@ -5,8 +5,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-from .models import MedicalRecord, MedicalPrescription, Exam
-from .serializers import MedicalRecordSerializer, MedicalPrescriptionSerializer, ExamSerializer
+from .models import MedicalRecord, MedicalPrescription, Exam, AccessHistory
+from .serializers import MedicalRecordSerializer, MedicalPrescriptionSerializer, ExamSerializer, AccessHistorySerializer
 import json
 
 @api_view(['GET', 'POST'])
@@ -209,6 +209,93 @@ def get_put_and_delete_exam_by_id(request, id):
 
         try:
             exam.delete()
+            return Response(status=status.HTTP_202_ACCEPTED)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'POST'])
+def get_all_and_post_access_histories(request):
+
+    if request.method == 'GET':
+
+        try:
+            patient = request.GET.get('patient', None)
+            practitioner = request.GET.get('practitioner', None)
+
+            if patient:
+
+                access_histories_by_patient = AccessHistory.objects.filter(patient=patient)
+
+                if access_histories_by_patient.exists():
+                    serializer = AccessHistorySerializer(access_histories_by_patient, many=True)
+                    return Response(serializer.data)
+                
+                else:
+                    return Response({"detail": "No access histories found for the given patient."}, status=status.HTTP_404_NOT_FOUND)
+                
+            elif practitioner:
+
+                access_histories_by_practitioner = AccessHistory.objects.filter(practitioner=practitioner)
+
+                if access_histories_by_practitioner.exists():
+                    serializer = AccessHistorySerializer(access_histories_by_practitioner, many=True)
+                    return Response(serializer.data)
+                
+                else:
+                    return Response({"detail": "No access histories found for the given practitioner."}, status=status.HTTP_404_NOT_FOUND)
+
+            access_histories = AccessHistory.objects.all()
+
+            serializer = AccessHistorySerializer(access_histories, many=True)
+
+            return Response(serializer.data)
+        
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+    
+    if request.method == 'POST':
+        new_access_history = request.data
+
+        serializer = AccessHistorySerializer(data=new_access_history)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def get_put_and_delete_access_history_by_id(request, id):
+
+    try:
+        access_history = AccessHistory.objects.get(pk=id)
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'GET':
+        serializer = AccessHistorySerializer(access_history)
+        return Response(serializer.data)
+    
+    if request.method == 'PUT':
+        serializer = AccessHistorySerializer(access_history, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    if request.method == 'DELETE':
+
+        try:
+            access_history.delete()
             return Response(status=status.HTTP_202_ACCEPTED)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
